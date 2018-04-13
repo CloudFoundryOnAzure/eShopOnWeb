@@ -6,6 +6,8 @@ using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.eShopWeb.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Microsoft.eShopWeb.Web
 {
@@ -41,7 +43,17 @@ namespace Microsoft.eShopWeb.Web
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseUrls("http://0.0.0.0:5106")
+                .UseCloudFoundryHosting()
+                .ConfigureAppConfiguration((builderContext, configBuilder) =>
+                {
+                    var env = builderContext.HostingEnvironment;
+                    configBuilder.SetBasePath(env.ContentRootPath)
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                        .AddEnvironmentVariables()
+                        // Add to configuration the Cloudfoundry VCAP settings
+                        .AddCloudFoundry();
+                })
                 .UseStartup<Startup>();
     }
 }
