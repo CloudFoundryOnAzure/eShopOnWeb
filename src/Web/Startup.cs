@@ -31,15 +31,17 @@ namespace Microsoft.eShopWeb.Web
         public void ConfigureDevelopmentServices(IServiceCollection services)
         {
             // use in-memory database
-            ConfigureInMemoryDatabases(services);
+            // Requires LocalDB which can be installed with SQL Server Express 2016
+            // https://www.microsoft.com/en-us/download/details.aspx?id=54284
+            // ConfigureInMemoryDatabases(services);
 
             // use real database
-            // ConfigureProductionServices(services);
+            ConfigureProductionServices(services);
         }
 
         private void ConfigureInMemoryDatabases(IServiceCollection services)
         {
-            // use in-memory database
+            // Add Catalog DbContext
             services.AddDbContext<CatalogContext>(c =>
                 c.UseInMemoryDatabase("Catalog"));
 
@@ -52,15 +54,21 @@ namespace Microsoft.eShopWeb.Web
 
         public void ConfigureProductionServices(IServiceCollection services)
         {
-            // use real database
-            // Requires LocalDB which can be installed with SQL Server Express 2016
-            // https://www.microsoft.com/en-us/download/details.aspx?id=54284
+            var config = builder.Build();
+            var host = config["vcap:services:sqldbpair:0:credentials:host"]
+            var port = config["vcap:services:sqldbpair:0:credentials:port"]
+            var database = config["vcap:services:sqldbpair:0:credentials:database"]
+            var username = config["vcap:services:sqldbpair:0:credentials:username"]
+            var password = config["vcap:services:sqldbpair:0:credentials:password"]
+            var connectionString = "Server=tcp:" + host + "," + port + ";Initial Catalog=" + database + ";Persist Security Info=False;User ID=" + username + ";Password=" + password + ";MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+
+            // Add Catalog DbContext
             services.AddDbContext<CatalogContext>(c =>
-                c.UseSqlServer(Configuration.GetConnectionString("CatalogConnection")));
+                c.UseSqlServer(connectionString));
 
             // Add Identity DbContext
             services.AddDbContext<AppIdentityDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
+                options.UseSqlServer(connectionString));
 
             ConfigureServices(services);
         }
