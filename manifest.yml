@@ -1,0 +1,12 @@
+---
+applications:
+- name: eshop
+  buildpacks:
+    - dotnet_core_buildpack
+  disk: 512M
+  memory: 1G
+  instances: 1
+  env:
+    ASPNETCORE_ENVIRONMENT: Development
+  routes:
+  - route: eshop.azure.mslovelinux.com
