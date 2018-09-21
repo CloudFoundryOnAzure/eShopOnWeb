@@ -13,6 +13,7 @@ using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.CloudFoundry.Connector.SqlServer.EFCore;
 using System;
 using System.Text;
 
@@ -54,21 +55,27 @@ namespace Microsoft.eShopWeb.Web
 
         public void ConfigureProductionServices(IServiceCollection services)
         {
-            var config = builder.Build();
-            var host = config["vcap:services:sqldbpair:0:credentials:host"]
-            var port = config["vcap:services:sqldbpair:0:credentials:port"]
-            var database = config["vcap:services:sqldbpair:0:credentials:database"]
-            var username = config["vcap:services:sqldbpair:0:credentials:username"]
-            var password = config["vcap:services:sqldbpair:0:credentials:password"]
-            var connectionString = "Server=tcp:" + host + "," + port + ";Initial Catalog=" + database + ";Persist Security Info=False;User ID=" + username + ";Password=" + password + ";MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            // var config = builder.Build();
+            // var host = config["vcap:services:sqldbpair:0:credentials:host"]
+            // var port = config["vcap:services:sqldbpair:0:credentials:port"]
+            // var database = config["vcap:services:sqldbpair:0:credentials:database"]
+            // var username = config["vcap:services:sqldbpair:0:credentials:username"]
+            // var password = config["vcap:services:sqldbpair:0:credentials:password"]
+            // var connectionString = "Server=tcp:" + host + "," + port + ";Initial Catalog=" + database + ";Persist Security Info=False;User ID=" + username + ";Password=" + password + ";MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+
+            // // Add Catalog DbContext
+            // services.AddDbContext<CatalogContext>(c =>
+            //     c.UseSqlServer(connectionString));
+
+            // // Add Identity DbContext
+            // services.AddDbContext<AppIdentityDbContext>(options =>
+            //     options.UseSqlServer(connectionString));
 
             // Add Catalog DbContext
-            services.AddDbContext<CatalogContext>(c =>
-                c.UseSqlServer(connectionString));
+            services.AddDbContext<CatalogContext>(c => c.UseSqlServer(Configuration, "mySqlServerService"));
 
             // Add Identity DbContext
-            services.AddDbContext<AppIdentityDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            services.AddDbContext<AppIdentityDbContext>(c => c.UseSqlServer(Configuration, "mySqlServerService"));
 
             ConfigureServices(services);
         }

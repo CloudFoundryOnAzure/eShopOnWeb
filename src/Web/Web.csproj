@@ -11,6 +11,7 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.2" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.3" PrivateAssets="All" />
 		<PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryCore" Version="2.1.0" />
+		<PackageReference Include="Steeltoe.CloudFoundry.Connector.EFCore" Version="2.1.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Views\Catalog\" />
