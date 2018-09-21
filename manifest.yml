@@ -8,3 +8,4 @@ applications:
   instances: 1
   env:
     ASPNETCORE_ENVIRONMENT: Development
+    SERVICE_NAME: azure-sql-12-0-dr-database-pair

@@ -54,13 +54,22 @@ namespace Microsoft.eShopWeb.Web
 
         public void ConfigureProductionServices(IServiceCollection services)
         {
+            var serviceName = Configuration.GetSection("SERVICE_NAME").Value;
+            var credentials = Configuration.GetSection("vcap:services:" + serviceName + ":0:credentials");
+            var host = credentials.GetValue<string>("host");
+            var port = credentials.GetValue<string>("port");
+            var database = credentials.GetValue<string>("database");
+            var username = credentials.GetValue<string>("username");
+            var password = credentials.GetValue<string>("password");
+            var connectionString = "Server=tcp:" + host + "," + port + ";Initial Catalog=" + database + ";Persist Security Info=False;User ID=" + username + ";Password=" + password + ";MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+
             // Add Catalog DbContext
             services.AddDbContext<CatalogContext>(c =>
-                c.UseSqlServer(Configuration.GetConnectionString("CatalogConnection")));
+                c.UseSqlServer(connectionString));
 
             // Add Identity DbContext
             services.AddDbContext<AppIdentityDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
+                options.UseSqlServer(connectionString));
 
             ConfigureServices(services);
         }
